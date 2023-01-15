@@ -1,12 +1,4 @@
-import os
-path = '/Users/zhenjiaodu/no_icloud/1. ksu-in class/CIS 730 introduction to artifical intelligence/term project/BERT_4_ACE/uber_rides_prediction_using_machine_learning'
-os.chdir(path)
-
 import numpy as np
-from flask import Flask, request, jsonify, render_template
-import pickle
-import math
-import collections
 from keras.models import load_model
 from flask import Flask,request, url_for, redirect, render_template
 from sklearn.preprocessing import MinMaxScaler
