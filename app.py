@@ -5,7 +5,6 @@ from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
 
 app = Flask(__name__)
-# model = pickle.load(open('model.pkl','rb'))
 # load the prediction model
 model = load_model('DPPIV_tensorflow_model')
 # embeddings function
