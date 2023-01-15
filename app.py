@@ -5,8 +5,7 @@ import joblib
 import pandas as pd
 
 app = Flask(__name__)
-# load the prediction model
-model = load_model('DPPIV_tensorflow_model')
+
 # embeddings function
 def esm_embeddings(peptide_sequence_list: list):
     # NOTICE: ESM for embeddings is quite RAM usage, if your sequence is too long,
@@ -51,9 +50,6 @@ def esm_embeddings(peptide_sequence_list: list):
     embeddings_results = pd.DataFrame(embeddings_results).T
     return embeddings_results
 
-scaler = joblib.load('DPPIV_tensorflow_model.joblib')
-# scaler.transform will automatically transform the pd.dataframe into a np.array data format
-
 # collect the output
 def assign_activity(predicted_class):
     import collections
@@ -78,7 +74,16 @@ def predict():
     # int_features  = [str(x) for x in request.form.values()] # this command basically use extract all the input into a list
     #final_features = [np.array(int_features)]
     int_features  = [str(x) for x in request.form.values()]
-    sequence_list=int_features[0].split(',')  # 因为这个list里面只有一个element，所以我只需要把吧这个拿出来，然后split
+    # we have two input in the website, one is the model type and other is the peptide sequences
+    
+    # choose scaler and model
+    name = int_features[0]
+    model_name = name
+    model = load_model(model_scaler_name)
+    scaler_name = model+'.joblib'
+    scaler = joblib.load(scaler_name)
+
+    sequence_list=int_features[1].split(',')  # 因为这个list里又两个element我们需要第二个，所以我只需要把吧这个拿出来，然后split
     # 另外需要注意，这个地方，网页上输入的时候必须要是AAA,CCC,SAS, 这个格式，不同的sequence的区分只能使用逗号，其他的都不可以
     peptide_sequence_list = []
     for seq in sequence_list:
