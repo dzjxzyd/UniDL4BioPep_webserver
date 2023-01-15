@@ -1,7 +1,7 @@
 import numpy as np
 from keras.models import load_model
 from flask import Flask,request, url_for, redirect, render_template
-from sklearn.preprocessing import MinMaxScaler
+import joblib
 import pandas as pd
 
 app = Flask(__name__)
@@ -51,13 +51,7 @@ def esm_embeddings(peptide_sequence_list: list):
     embeddings_results = pd.DataFrame(embeddings_results).T
     return embeddings_results
 
-# normalized the embeddings
-X_train_data_name = 'DPPIV_train_esm2_t6_8M_UR50D_unified_320_dimension.csv'
-X_train_data = pd.read_csv(X_train_data_name, header=0, index_col=0, delimiter=',')
-X_train = np.array(X_train_data)
-# normalize the X data range
-scaler = MinMaxScaler()
-scaler.fit(X_train)
+scaler = joblib.load('DPPIV_tensorflow_model.joblib')
 # scaler.transform will automatically transform the pd.dataframe into a np.array data format
 
 # collect the output
