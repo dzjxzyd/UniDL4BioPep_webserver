@@ -5,6 +5,7 @@ fair-esm==2.0.0
 keras==2.11.0
 scikit-learn===1.0.2
 tensorflow-cpu== 2.11.0
-torch==1.9.0+cpu 
-torchvision==0.10.0+cpu
+-f https://download.pytorch.org/whl/torch_stable.html
+torch==1.8.1+cpu
+torchvision==0.9.1+cpu
 gunicorn
