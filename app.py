@@ -103,7 +103,7 @@ def predict():
         predicted_class.append(index) # get the class of the results
     predicted_class = assign_activity(predicted_class) # transform results (0 and 1) into 'active' and 'non-active'
 
-    return render_template('index.html',prediction_text="Number of Weekly Rides Should be {}".format(predicted_class))
+    return render_template('index.html',prediction_text="Prediction results of input sequences {}".format(predicted_class))
 
 if __name__ == '__main__':
     app.run()
