@@ -34,7 +34,9 @@
 
   
         <h1>UniDL4BioPep: A universal deep learning architecture</h1>
+	<h1>instruction for the usage</h1>
         <form action="{{url_for('predict')}}" method="post">
+	    <input type="text" name="Peptide_sequences" placeholder="model name you like:DPPIV_tensorflow_model" required="required">
             <input type="text" name="Peptide_sequences" placeholder="peptide sequence input examples: IPI,IPIQY,CAYQWQRPVDRIR" required="required">
             <button type="submit" class="btn btn-primary btn-block btn-large">Run</button>
         </form>
