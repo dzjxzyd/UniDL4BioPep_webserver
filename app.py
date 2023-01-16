@@ -79,8 +79,8 @@ def predict():
     # choose scaler and model
     name = int_features[0]
     model_name = name
-    model = load_model(model_scaler_name)
-    scaler_name = model+'.joblib'
+    model = load_model(model_name)
+    scaler_name = model_name+'.joblib'
     scaler = joblib.load(scaler_name)
 
     sequence_list=int_features[1].split(',')  # 因为这个list里又两个element我们需要第二个，所以我只需要把吧这个拿出来，然后split
