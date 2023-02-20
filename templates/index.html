@@ -23,6 +23,7 @@
     <div class="content">
         <h1>UniDL4BioPep: A universal deep learning architecture for bioactive peptide prediction</h1>
         <p style="font-size:70%">The webserver is the implementation of the paper "UniDL4BioPep: UniDL4BioPep: A universal deep learning architecture for binary classification in peptide bioactivity"</p>
+	<p style="font-size:80%">Quick output version: 1. Choose a model  → 2. Input a peptide sequence</p>
         <form action="{{url_for('predict')}}" method="post">
             <label for="Model selection">Choose a model:</label>
             <select name="Model selection" id="model1" required="required">
@@ -46,7 +47,7 @@
         {{ prediction_text }}
         <br/>
         <br/>
-        <p>Approach two. Upload a file. We support txt, xls, xlsx, and fasta.</p>
+        <p style="font-size:80%">Large-scale output version: 1. Prepare your files (xls, xlsx, fasta, or txt) and click “Choose File” for uploading → 2. Choose a model for classification  → 3. Download the results. </p>
         <form action="{{url_for('pred_with_file')}}" method="post" enctype = "multipart/form-data">
             <label for="Model_selection">Choose a model:</label>
             <select name="Model_selection" id="model2" required="required">
