@@ -20,24 +20,58 @@
     </head>
 
 <body>
-<div class="content">
-    <body>
-
-
+    <div class="content">
         <h1>UniDL4BioPep: A universal deep learning architecture for bioactive peptide prediction</h1>
-        <p style="font-size:70%">The webserver is the implementation of the paper "UniDL4BioPep: UniDL4BioPep: A universal deep learning architecture for binary classification in peptide bioactivity"<p>
+        <p style="font-size:70%">The webserver is the implementation of the paper "UniDL4BioPep: UniDL4BioPep: A universal deep learning architecture for binary classification in peptide bioactivity"</p>
         <form action="{{url_for('predict')}}" method="post">
-             <input type="text" name="Model selection" placeholder="input model index, example:1" required="required">
-            <input type="text" name="Peptide_sequences" placeholder="peptide sequence input, example: ASD,QWE,APE" required="required">
+            <label for="Model selection">Choose a model:</label>
+            <select name="Model selection" id="model1" required="required">
+                <option value="1">Antihypertensive</option>
+                <option value="2">DPPIV</option>
+                <option value="3">bitter</option>
+                <option value="4">umami</option>
+                <option value="5">AMP</option>
+                <option value="6">AMAP_main</option>
+                <option value="7">AMAP_alternative</option>
+                <option value="8">QS</option>
+                <option value="9">ACP_main</option>
+                <option value="10">ACP_alternative</option>
+                <option value="11">MRSA_main</option>
+                <option value="12">TTCA</option>
+            </select>
+{#            <input type="text" name="Model selection" placeholder="input model index, example:1" required="required">#}
+            <input type="text" name="Peptide_sequences" placeholder="peptide sequence input, example: ASD,QWE,APE" required="required" />
             <button type="submit" class="btn btn-primary btn-block btn-large">Run</button>
         </form>
-        <br>
-        <br>
         {{ prediction_text }}
-        <h4>Usage of the webserver:<h4>
-        <p style="font-size:70%">STEP 1. Select a prediction model based on their index, 1. ACE inhibitory activity; 2. DPP IV inhibitory activity; 3. Bitter; 4. Umami; 5.Antimicrobial activity; 6. Antimalarial activity (main dataset); 7. Antimalarial activity (alternative dataset); 8. Quorum sensing activity; 9. Anticancer activity (main dataset); 10. Anticancer activity (alternative dataset); 11. Anti-MRSA strains activity; 12. Tumor T cell antigens STEP 2. Input your peptide sequence and separate them by comma<p>
-        <p style="font-size:70%">Example: you can input 1 in the first box and AGRI,CCL,FIRST in the second box; Than means you want to use "ACE inhibitory activity prediction model" to predict the bioactivity of the four peptide sequences<p>
+        <br/>
+        <br/>
+        <p>Approach two. Upload a file. We support txt, xls, xlsx, and fasta.</p>
+        <form action="{{url_for('pred_with_file')}}" method="post" enctype = "multipart/form-data">
+            <label for="Model_selection">Choose a model:</label>
+            <select name="Model_selection" id="model2" required="required">
+                <option value="1">Antihypertensive</option>
+                <option value="2">DPPIV</option>
+                <option value="3">bitter</option>
+                <option value="4">umami</option>
+                <option value="5">AMP</option>
+                <option value="6">AMAP_main</option>
+                <option value="7">AMAP_alternative</option>
+                <option value="8">QS</option>
+                <option value="9">ACP_main</option>
+                <option value="10">ACP_alternative</option>
+                <option value="11">MRSA_main</option>
+                <option value="12">TTCA</option>
+            </select>
+        <br>
+            <label for="Peptide_sequences">Choose a file to upload</label>
+            <input type="file" name="Peptide_sequences" id="Peptide_sequences" accept=".xls,.xlsx,.txt,.fasta"/>
+            <button type="submit" class="btn btn-primary btn-block btn-large">Run</button>
+        </form>
+        <h4>Usage of the webserver:</h4>
+        <p style="font-size:70%">STEP 1. Select a prediction model based on their index, 1. ACE inhibitory activity; 2. DPP IV inhibitory activity; 3. Bitter; 4. Umami; 5.Antimicrobial activity; 6. Antimalarial activity (main dataset); 7. Antimalarial activity (alternative dataset); 8. Quorum sensing activity; 9. Anticancer activity (main dataset); 10. Anticancer activity (alternative dataset); 11. Anti-MRSA strains activity; 12. Tumor T cell antigens STEP 2. Input your peptide sequence and separate them by comma</p>
+        <p style="font-size:70%">Example: you can input 1 in the first box and AGRI,CCL,FIRST in the second box; Than means you want to use "ACE inhibitory activity prediction model" to predict the bioactivity of the four peptide sequences</p>
         <img src="static/css/Whole architecture.png" alt="Whole architecture" width="730" height="300" style="float:left">
-</div>
-</div>
+    </div>
+</body>
 </html>
