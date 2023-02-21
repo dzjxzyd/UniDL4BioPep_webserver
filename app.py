@@ -178,7 +178,7 @@ def predict():
 def pred_with_file():
     # delete existing files that are in the 'input' folder
     dir = 'input'
-    for f in os.listdir(dir):
+    for f in os.listdir(os.path.join(os.getcwd(), dir)):
         os.remove(os.path.join(dir, f))
     # 每一个网页上的 输入的框，是一个单独的x，下面这个就是吧这个单独的信息变成一个list，每一个单独的就是一个str （也可以吧x变成int 如果想要的话）
     # int_features  = [str(x) for x in request.form.values()] # this command basically use extract all the input into a list
