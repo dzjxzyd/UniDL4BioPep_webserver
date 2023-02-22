@@ -44,7 +44,7 @@
             <input type="text" name="Peptide_sequences" placeholder="peptide sequence input, example: ASD,QWE,APE" required="required" />
             <button type="submit" class="btn btn-primary btn-block btn-large">Run</button>
         </form>
-        {{ prediction_text }}
+        <p style="color:cyan"> {{ prediction_text }} </p>
         <br/>
         <br/>
         <p style="font-size:80%">Large-scale output version: 1. Prepare your files (xls, xlsx, fasta, or txt) and click “Choose File” for uploading → 2. Choose a model for classification  → 3. Download the results. </p>
@@ -72,7 +72,7 @@
         <h4>Usage of the webserver:</h4>
         <p style="font-size:80%"> Example for “Quick output version” : </p>
         <p style="font-size:70%">1. Select “Antihypertensive” model for antihypertensive activity prediction.   →   →  →  2. Insert a peptide or protein sequence, “VPP” →   →  →  3. Click “Run”→   →  → 4. The result will be returned in seconds below the “Run” button</p>
-        <p style="font-size:70%">Notice: it also support multiple sequence at the same time. Just input as “VPP,IPP,CCL,AGR” (sequences are separated by comma)</p>
+        <p style="font-size:70%">Notice: it also support multiple sequence at the same time. Just input as “VPP,IPP,CCL,AGR” (sequences are separated by comma, no space)</p>
         <p style="font-size:80%"> Example for “Large-scale output version:” : </p>
         <p style="font-size:70%">1. Prepare your xls, xlsx, txt or fasta files  →  →  → 2. Upload the file through “Choose File” botton  →   →  → 3. Click “Run” →   →  → 4. It will automatically download your results. </p>
         <p style="font-size:70%">Notice: File preparation should follow the examples under this repository https://github.com/dzjxzyd/UniDL4BioPep_webserver/tree/main/Example%20uploading%20files </p>
