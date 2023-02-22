@@ -169,9 +169,13 @@ def predict():
         index = np.where(predicted_protability[i] == np.amax(predicted_protability[i]))[0][0]
         predicted_class.append(index)  # get the class of the results
     predicted_class = assign_activity(predicted_class)  # transform results (0 and 1) into 'active' and 'non-active'
+    final_output = []
+    for i in range(len(sequence_list)):
+        temp_output=sequence_list[i]+': '+predicted_class[i]+';'
+        final_output.append(temp_output)
 
     return render_template('index.html',
-                           prediction_text="Prediction results of input sequences {}".format(predicted_class))
+                           prediction_text="Prediction results of input sequences {}".format(final_output))
 
 
 @app.route('/pred_with_file', methods=['POST'])
