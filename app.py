@@ -6,6 +6,7 @@ from flask import Flask, request, url_for, redirect, render_template, send_from_
 import joblib
 import pandas as pd
 from werkzeug.utils import secure_filename
+from focal_loss import BinaryFocalLoss
 
 app = Flask(__name__)
 
@@ -76,31 +77,53 @@ def get_filetype(filename):
 def model_selection(num: str):
     model = ''
     if num == '1':
-        model = '1_Antihypertensive_scaler'
+        model = '1_Antihypertensive'
     elif num == '2':
-        model = '2_DPPIV_tensorflow_model'
+        model = '2_DPPIV'
     elif num == '3':
-        model = '3_bitter_scaler'
+        model = '3_bitter'
     elif num == '4':
-        model = '4_umami_scaler'
+        model = '4_umami'
     elif num == '5':
-        model = '5_AMP_scaler'
+        model = '5_AMP'
     elif num == '6':
-        model = '6_AMAP_main_scaler'
+        model = '6_AMAP_main'
     elif num == '7':
-        model = '7_AMAP_alternative_scaler'
+        model = '7_AMAP_alternative'
     elif num == '8':
-        model = '8_QS_scaler'
+        model = '8_QS'
     elif num == '9':
-        model = '9_ACP_main_scaler'
+        model = '9_ACP_main'
     elif num == '10':
-        model = '10_ACP_alternative_scaler'
+        model = '10_ACP_alternative'
     elif num == '11':
-        model = '11_MRSA_main_scaler'
+        model = '11_MRSA_main'
     elif num == '12':
-        model = '12_TTCA_scaler'
+        model = '12_TTCA'
+    elif num == '13':
+        model = '13_AF'
+    elif num == '14':
+        model = '14_antioxidant'
+    elif num == '15':
+        model = '15_AV'
+    elif num == '16':
+        model = '16_FL_AMAP_alternative'
+    elif num == '17':
+        model = '17_FL_AMAP_main'
+    elif num == '18':
+        model = '18_FL_AMP'
+    elif num == '19':
+        model = '19_FL_MRSA'
+    elif num == '20':
+        model = '20_FL_umami'
+    elif num == '21':
+        model = '21_APP'
+    elif num == '22':
+        model = '22_Toxicity'
+    elif num == '23':
+        model = '23_neuro'
     else:
-        model = '1_Antihypertensive_scaler'
+        raise ValueError("Model id should be integers between 1 and 23")
     return model
 
 
@@ -127,6 +150,32 @@ def text_fasta_reading(file_name):
     return sequence_list
 
 
+def get_activity(model_name, sequence_list) -> list:
+    model = load_model(model_name)
+    scaler_name = model_name + '.joblib'
+    scaler = joblib.load(scaler_name)
+    # 因为这个list里又两个element我们需要第二个，所以我只需要把吧这个拿出来，然后split
+    # 另外需要注意，这个地方，网页上输入的时候必须要是AAA,CCC,SAS, 这个格式，不同的sequence的区分只能使用逗号，其他的都不可以
+    peptide_sequence_list = []
+    for seq in sequence_list:
+        format_seq = [seq, seq]  # the setting is just following the input format setting in ESM model, [name,sequence]
+        tuple_sequence = tuple(format_seq)
+        peptide_sequence_list.append(
+            tuple_sequence)  # build a summarize list variable including all the sequence information
+
+    embeddings_results = esm_embeddings(peptide_sequence_list)  # conduct the embedding
+    normalized_embeddings_results = scaler.transform(embeddings_results)  # normalized the embeddings
+
+    # prediction
+    predicted_protability = model.predict(normalized_embeddings_results, batch_size=1)
+    predicted_class = []
+    for i in range(predicted_protability.shape[0]):
+        index = np.where(predicted_protability[i] == np.amax(predicted_protability[i]))[0][0]
+        predicted_class.append(index)  # get the class of the results
+    predicted_class = assign_activity(predicted_class)  # transform results (0 and 1) into 'active' and 'non-active'
+    return predicted_class
+
+
 # create an app object using the Flask class
 @app.route('/')
 def home():
@@ -143,12 +192,13 @@ def predict():
 
     # choose scaler and model
     #    name = int_features[0]
-    if int(int_features[0]) < 1 or int(int_features[0]) > 12:
-        return render_template('index.html')
-    model_name = model_selection(int_features[0])
+    model_id = int_features[0]
+    model_name = model_selection(model_id)
     model = load_model(model_name)
     scaler_name = model_name + '.joblib'
-    scaler = joblib.load(scaler_name)
+    print(scaler_name)
+    scaler = joblib.load(os.path.join(os.getcwd(),scaler_name))
+    print(scaler is None)
 
     sequence_list = int_features[1].split(',')  # 因为这个list里又两个element我们需要第二个，所以我只需要把吧这个拿出来，然后split
     # 另外需要注意，这个地方，网页上输入的时候必须要是AAA,CCC,SAS, 这个格式，不同的sequence的区分只能使用逗号，其他的都不可以
@@ -169,13 +219,9 @@ def predict():
         index = np.where(predicted_protability[i] == np.amax(predicted_protability[i]))[0][0]
         predicted_class.append(index)  # get the class of the results
     predicted_class = assign_activity(predicted_class)  # transform results (0 and 1) into 'active' and 'non-active'
-    final_output = []
-    for i in range(len(sequence_list)):
-        temp_output=sequence_list[i]+': '+predicted_class[i]+';'
-        final_output.append(temp_output)
 
     return render_template('index.html',
-                           prediction_text="Prediction results of input sequences {}".format(final_output))
+                           prediction_text="Prediction results of input sequences {}".format(predicted_class))
 
 
 @app.route('/pred_with_file', methods=['POST'])
@@ -191,17 +237,14 @@ def pred_with_file():
     # we have two input in the website, one is the model type and other is the peptide sequences
     # choose scaler and model
     #    name = int_features[0]
-    model_name = model_selection(features.get("Model_selection"))
-    model = load_model(model_name)
-    scaler_name = model_name + '.joblib'
-    scaler = joblib.load(scaler_name)
-
+    models = features.getlist("Model_selection")
+    if len(models) == 0:  # didn't check any model
+        return home()
     file = request.files["Peptide_sequences"]
     filename = secure_filename(file.filename)
     filetype = get_filetype(filename)
     save_location = os.path.join('input', filename)
     file.save(save_location)
-
     sequence_list = []
     if filetype == 'xls' or filetype == 'xlsx':
         df = pandas.read_excel(save_location, header=0)
@@ -210,29 +253,14 @@ def pred_with_file():
         sequence_list = text_fasta_reading(save_location)
 
     if len(sequence_list) == 0:
-        return render_template("index.html")
+        return home()
 
-    # 因为这个list里又两个element我们需要第二个，所以我只需要把吧这个拿出来，然后split
-    # 另外需要注意，这个地方，网页上输入的时候必须要是AAA,CCC,SAS, 这个格式，不同的sequence的区分只能使用逗号，其他的都不可以
-    peptide_sequence_list = []
-    for seq in sequence_list:
-        format_seq = [seq, seq]  # the setting is just following the input format setting in ESM model, [name,sequence]
-        tuple_sequence = tuple(format_seq)
-        peptide_sequence_list.append(
-            tuple_sequence)  # build a summarize list variable including all the sequence information
+    report = {"sequence": sequence_list}
+    for model in models:
+        model_name = model_selection(model)
+        activities = get_activity(model_name, sequence_list)
+        report[model_name] = activities
 
-    embeddings_results = esm_embeddings(peptide_sequence_list)  # conduct the embedding
-    normalized_embeddings_results = scaler.transform(embeddings_results)  # normalized the embeddings
-
-    # prediction
-    predicted_protability = model.predict(normalized_embeddings_results, batch_size=1)
-    predicted_class = []
-    for i in range(predicted_protability.shape[0]):
-        index = np.where(predicted_protability[i] == np.amax(predicted_protability[i]))[0][0]
-        predicted_class.append(index)  # get the class of the results
-    predicted_class = assign_activity(predicted_class)  # transform results (0 and 1) into 'active' and 'non-active'
-
-    report = {"sequence": sequence_list, "activity": predicted_class}
     report_df = pandas.DataFrame(report)
     save_result_path = os.path.join('input', "report.xlsx")
     report_df.to_excel(save_result_path)

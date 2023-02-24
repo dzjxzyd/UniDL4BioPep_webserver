@@ -15,41 +15,20 @@
 			  max-width: 1000px;
 			  margin: auto;
 			}
-
-			</style>
+            input[type=checkbox]{
+                width: 20px;
+            }
+        </style>
     </head>
 
 <body>
     <div class="content">
         <h1>UniDL4BioPep: A universal deep learning architecture for bioactive peptide prediction</h1>
         <p style="font-size:70%">The webserver is the implementation of the paper "UniDL4BioPep: UniDL4BioPep: A universal deep learning architecture for binary classification in peptide bioactivity"</p>
-	<p style="font-size:80%">Quick output version: 1. Choose a model  → 2. Input a peptide sequence</p>
+        <fieldset>
+        <p>Approach One. Choose a model and enter your favorite sequence(s), use comma to separate if needed.</p>
         <form action="{{url_for('predict')}}" method="post">
             <label for="Model selection">Choose a model:</label>
-            <select name="Model selection" id="model1" required="required">
-                <option value="1">Antihypertensive</option>
-                <option value="2">DPPIV</option>
-                <option value="3">bitter</option>
-                <option value="4">umami</option>
-                <option value="5">AMP</option>
-                <option value="6">AMAP_main</option>
-                <option value="7">AMAP_alternative</option>
-                <option value="8">QS</option>
-                <option value="9">ACP_main</option>
-                <option value="10">ACP_alternative</option>
-                <option value="11">MRSA_main</option>
-                <option value="12">TTCA</option>
-            </select>
-{#            <input type="text" name="Model selection" placeholder="input model index, example:1" required="required">#}
-            <input type="text" name="Peptide_sequences" placeholder="peptide sequence input, example: ASD,QWE,APE" required="required" />
-            <button type="submit" class="btn btn-primary btn-block btn-large">Run</button>
-        </form>
-        <p style="color:cyan"> {{ prediction_text }} </p>
-        <br/>
-        <br/>
-        <p style="font-size:80%">Large-scale output version: 1. Prepare your files (xls, xlsx, fasta, or txt) and click “Choose File” for uploading → 2. Choose a model for classification  → 3. Download the results. </p>
-        <form action="{{url_for('pred_with_file')}}" method="post" enctype = "multipart/form-data">
-            <label for="Model_selection">Choose a model:</label>
             <select name="Model_selection" id="model2" required="required">
                 <option value="1">Antihypertensive</option>
                 <option value="2">DPPIV</option>
@@ -63,21 +42,68 @@
                 <option value="10">ACP_alternative</option>
                 <option value="11">MRSA_main</option>
                 <option value="12">TTCA</option>
+                <option value="13">AF</option>
+                <option value="14">antioxidant</option>
+                <option value="15">AV</option>
+                <option value="16">AMAP_alternative(FL)</option>
+                <option value="17">AMAP_main(FL)</option>
+                <option value="18">AMP(FL)</option>
+                <option value="19">MRSA(FL)</option>
+                <option value="20">umami(FL)</option>
+                <option value="21">APP</option>
+                <option value="22">Toxicity</option>
+                <option value="23">neuro</option>
             </select>
-        <br>
+{#            <input type="text" name="Model selection" placeholder="input model index, example:1" required="required">#}
+            <input type="text" name="Peptide_sequences" placeholder="peptide sequence input, example: ASD,QWE,APE" required="required" />
+            <button type="submit" class="btn btn-primary btn-block btn-large">Run</button>
+        </form>
+        <p style="color:cyan"> {{ prediction_text }} </p>
+        </fieldset>
+        <br/>
+        <br/>
+        <fieldset>
+        <p>Approach two. Upload a file. We support txt, xls, xlsx, and fasta.</p>
+        <form action="{{url_for('pred_with_file')}}" method="post" enctype = "multipart/form-data">
+            <label for="Model_selection">Choose your favorite model(s):</label> <br/>
+                <label><input type="checkbox" name="Model_selection" value="1" checked>Antihypertensive</label>
+                <label><input type="checkbox" name="Model_selection" value="2">DPPIV</label>
+                <label><input type="checkbox" name="Model_selection" value="3">bitter</label>
+                <label><input type="checkbox" name="Model_selection" value="4">umami</label>
+                <label><input type="checkbox" name="Model_selection" value="5">AMP</label>
+                <label><input type="checkbox" name="Model_selection" value="6">AMAP_main</label>
+                <label><input type="checkbox" name="Model_selection" value="7">AMAP_alternative</label>
+                <label><input type="checkbox" name="Model_selection" value="8">QS</label>
+                <label><input type="checkbox" name="Model_selection" value="9">ACP_main</label>
+                <label><input type="checkbox" name="Model_selection" value="10">ACP_alternative</label>
+                <label><input type="checkbox" name="Model_selection" value="11">MRSA_main</label>
+                <label><input type="checkbox" name="Model_selection" value="12">TTCA</label>
+                <label><input type="checkbox" name="Model_selection" value="13">Antifungal</label>
+                <label><input type="checkbox" name="Model_selection" value="14">Antioxidant</label>
+                <label><input type="checkbox" name="Model_selection" value="15">Antiviral</label>
+                <label><input type="checkbox" name="Model_selection" value="16">Antimicrobial</label>
+                <label><input type="checkbox" name="Model_selection" value="17">BBP</label>
+                <label><input type="checkbox" name="Model_selection" value="18">Toxicity</label>
+                <label><input type="checkbox" name="Model_selection" value="19">neuro</label>
+                <label><input type="checkbox" name="Model_selection" value="20">APP</label>  
+                <label><input type="checkbox" name="Model_selection" value="21">TTCA(FL)</label>
+                <label><input type="checkbox" name="Model_selection" value="22">umami(FL)</label>
+                <label><input type="checkbox" name="Model_selection" value="23">AMAP_alternative(FL)</label>
+                <label><input type="checkbox" name="Model_selection" value="24">AMAP_main(FL)</label>
+                <label><input type="checkbox" name="Model_selection" value="25">AMP(FL)</label>
+                <label><input type="checkbox" name="Model_selection" value="26">MRSA(FL)</label>
+
+
+            <br/>
             <label for="Peptide_sequences">Choose a file to upload</label>
             <input type="file" name="Peptide_sequences" id="Peptide_sequences" accept=".xls,.xlsx,.txt,.fasta"/>
             <button type="submit" class="btn btn-primary btn-block btn-large">Run</button>
         </form>
+        </fieldset>
         <h4>Usage of the webserver:</h4>
-        <p style="font-size:80%"> Example for “Quick output version” : </p>
-        <p style="font-size:70%">1. Select “Antihypertensive” model for antihypertensive activity prediction.   →   →  →  2. Insert a peptide or protein sequence, “VPP” →   →  →  3. Click “Run”→   →  → 4. The result will be returned in seconds below the “Run” button</p>
-        <p style="font-size:70%">Notice: it also support multiple sequence at the same time. Just input as “VPP,IPP,CCL,AGR” (sequences are separated by comma, no space)</p>
-        <p style="font-size:80%"> Example for “Large-scale output version:” : </p>
-        <p style="font-size:70%">1. Prepare your xls, xlsx, txt or fasta files  →  →  → 2. Upload the file through “Choose File” botton  →   →  → 3. Click “Run” →   →  → 4. It will automatically download your results. </p>
-        <p style="font-size:70%">Notice: File preparation should follow the examples under this repository https://github.com/dzjxzyd/UniDL4BioPep_webserver/tree/main/Example%20uploading%20files </p>
-
-        <img src="static/css/Whole architecture.png" alt="Whole architecture" width="950" height="650" style="float:left">
+        <p style="font-size:70%">STEP 1. Select a prediction model based on their index, 1. ACE inhibitory activity; 2. DPP IV inhibitory activity; 3. Bitter; 4. Umami; 5.Antimicrobial activity; 6. Antimalarial activity (main dataset); 7. Antimalarial activity (alternative dataset); 8. Quorum sensing activity; 9. Anticancer activity (main dataset); 10. Anticancer activity (alternative dataset); 11. Anti-MRSA strains activity; 12. Tumor T cell antigens STEP 2. Input your peptide sequence and separate them by comma</p>
+        <p style="font-size:70%">Example: you can input 1 in the first box and AGRI,CCL,FIRST in the second box; Than means you want to use "ACE inhibitory activity prediction model" to predict the bioactivity of the four peptide sequences</p>
+        <img src="static/css/Whole architecture.png" alt="Whole architecture" width="730" height="300" style="float:left">
     </div>
 </body>
 </html>
