@@ -107,23 +107,29 @@ def model_selection(num: str):
     elif num == '15':
         model = '15_AV'
     elif num == '16':
-        model = '16_FL_AMAP_alternative'
+        model = '16_AB'
     elif num == '17':
-        model = '17_FL_AMAP_main'
+        model = '17_BBP'
     elif num == '18':
-        model = '18_FL_AMP'
+        model = '18_Toxicity'
     elif num == '19':
-        model = '19_FL_MRSA'
+        model = '19_neuro'
     elif num == '20':
-        model = '20_FL_umami'
+        model = '20_APP'
     elif num == '21':
-        model = '21_APP'
+        model = '21_FL_TTCA'
     elif num == '22':
-        model = '22_Toxicity'
+        model = '22_FL_umami'
     elif num == '23':
-        model = '23_neuro'
+        model = '23_FL_AMAP_alternative'
+    elif num == '24':
+        model = '24_FL_AMAP_main'
+    elif num == '25':
+        model = '25_FL_AMP'
+    elif num == '26':
+        model = '26_FL_MRSA'
     else:
-        raise ValueError("Model id should be integers between 1 and 23")
+        raise ValueError("Model id should be the above 26 model")
     return model
 
 
@@ -169,9 +175,16 @@ def get_activity(model_name, sequence_list) -> list:
     # prediction
     predicted_protability = model.predict(normalized_embeddings_results, batch_size=1)
     predicted_class = []
-    for i in range(predicted_protability.shape[0]):
-        index = np.where(predicted_protability[i] == np.amax(predicted_protability[i]))[0][0]
-        predicted_class.append(index)  # get the class of the results
+    if 'FL' in model_name:
+        for i in range(predicted_protability.shape[0]):
+            if predicted_protability[i][0]>=0.5:
+                predicted_class.append(1)
+            else:
+                predicted_class.append(0)
+    else:
+        for i in range(predicted_protability.shape[0]):
+            index = np.where(predicted_protability[i] == np.amax(predicted_protability[i]))[0][0]
+            predicted_class.append(index)  # get the class of the results
     predicted_class = assign_activity(predicted_class)  # transform results (0 and 1) into 'active' and 'non-active'
     return predicted_class
 
@@ -219,9 +232,13 @@ def predict():
         index = np.where(predicted_protability[i] == np.amax(predicted_protability[i]))[0][0]
         predicted_class.append(index)  # get the class of the results
     predicted_class = assign_activity(predicted_class)  # transform results (0 and 1) into 'active' and 'non-active'
+    final_output = []
+    for i in range(len(sequence_list)):
+        temp_output=sequence_list[i]+': '+predicted_class[i]+';'
+        final_output.append(temp_output)
 
     return render_template('index.html',
-                           prediction_text="Prediction results of input sequences {}".format(predicted_class))
+                           prediction_text="Prediction results of input sequences {}".format(final_output))
 
 
 @app.route('/pred_with_file', methods=['POST'])
