@@ -166,8 +166,7 @@ def get_activity(model_name, sequence_list) -> list:
     for seq in sequence_list:
         format_seq = [seq, seq]  # the setting is just following the input format setting in ESM model, [name,sequence]
         tuple_sequence = tuple(format_seq)
-        peptide_sequence_list.append(
-            tuple_sequence)  # build a summarize list variable including all the sequence information
+        peptide_sequence_list.append(tuple_sequence)  # build a summarize list variable including all the sequence information
 
     embeddings_results = esm_embeddings(peptide_sequence_list)  # conduct the embedding
     normalized_embeddings_results = scaler.transform(embeddings_results)  # normalized the embeddings
@@ -175,18 +174,30 @@ def get_activity(model_name, sequence_list) -> list:
     # prediction
     predicted_protability = model.predict(normalized_embeddings_results, batch_size=1)
     predicted_class = []
+    predicted_class_new = []
     if 'FL' in model_name:
         for i in range(predicted_protability.shape[0]):
             if predicted_protability[i][0]>=0.5:
                 predicted_class.append(1)
             else:
                 predicted_class.append(0)
+        # reverse results for several model
+        if 'umami' or 'AMAP' or 'MRSA' or 'AMP' in model_name:
+             for i in range(len(predicted_class)):
+                 if predicted_class[i]==0:
+                     predicted_class_new.append(1)
+                 else:
+                     predicted_class_new.append(0)
+        else:
+            predicted_class_new = predicted_class
+
     else:
         for i in range(predicted_protability.shape[0]):
             index = np.where(predicted_protability[i] == np.amax(predicted_protability[i]))[0][0]
-            predicted_class.append(index)  # get the class of the results
-    predicted_class = assign_activity(predicted_class)  # transform results (0 and 1) into 'active' and 'non-active'
-    return predicted_class
+            predicted_class_new.append(index)  # get the class of the results
+
+    predicted_class_new = assign_activity(predicted_class_new)  # transform results (0 and 1) into 'active' and 'non-active'
+    return predicted_class_new
 
 
 # create an app object using the Flask class
@@ -231,7 +242,17 @@ def predict():
     for i in range(predicted_protability.shape[0]):
         index = np.where(predicted_protability[i] == np.amax(predicted_protability[i]))[0][0]
         predicted_class.append(index)  # get the class of the results
-    predicted_class = assign_activity(predicted_class)  # transform results (0 and 1) into 'active' and 'non-active'
+    # reverse results for several model
+    predicted_class_new = []
+    if 'umami' or 'AMAP' or 'MRSA' or 'AMP' in model_name:
+         for i in range(len(predicted_class)):
+             if predicted_class[i]==0:
+                 predicted_class_new.append(1)
+             else:
+                 predicted_class_new.append(0)
+    else:
+        predicted_class_new = predicted_class
+    predicted_class = assign_activity(predicted_class_new)  # transform results (0 and 1) into 'active' and 'non-active'
     final_output = []
     for i in range(len(sequence_list)):
         temp_output=sequence_list[i]+': '+predicted_class[i]+';'
