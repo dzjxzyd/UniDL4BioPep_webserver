@@ -238,20 +238,31 @@ def predict():
 
     # prediction
     predicted_protability = model.predict(normalized_embeddings_results, batch_size=1)
+
+
     predicted_class = []
-    for i in range(predicted_protability.shape[0]):
-        index = np.where(predicted_protability[i] == np.amax(predicted_protability[i]))[0][0]
-        predicted_class.append(index)  # get the class of the results
-    # reverse results for several model
     predicted_class_new = []
-    if 'umami' or 'AMAP' or 'MRSA' or 'AMP' in model_name:
-         for i in range(len(predicted_class)):
-             if predicted_class[i]==0:
-                 predicted_class_new.append(1)
-             else:
-                 predicted_class_new.append(0)
+    if 'FL' in model_name:
+        for i in range(predicted_protability.shape[0]):
+            if predicted_protability[i][0]>=0.5:
+                predicted_class.append(1)
+            else:
+                predicted_class.append(0)
+        # reverse results for several model
+        if 'umami' or 'AMAP' or 'MRSA' or 'AMP' in model_name:
+             for i in range(len(predicted_class)):
+                 if predicted_class[i]==0:
+                     predicted_class_new.append(1)
+                 else:
+                     predicted_class_new.append(0)
+        else:
+            predicted_class_new = predicted_class
+
     else:
-        predicted_class_new = predicted_class
+        for i in range(predicted_protability.shape[0]):
+            index = np.where(predicted_protability[i] == np.amax(predicted_protability[i]))[0][0]
+            predicted_class_new.append(index)  # get the class of the results
+
     predicted_class = assign_activity(predicted_class_new)  # transform results (0 and 1) into 'active' and 'non-active'
     final_output = []
     for i in range(len(sequence_list)):
